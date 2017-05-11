@@ -107,6 +107,3 @@ if __name__ == '__main__':
 
     while not pygame.event.wait().type in (QUIT, KEYDOWN):
         pass
-
-
-

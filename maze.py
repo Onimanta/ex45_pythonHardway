@@ -1,10 +1,9 @@
 import pygame
 
-from display import Display # Used to display rooms
-
 class Room(object):
+
     def __init__(self):
-        self.display = Display()
+        pass
 
 class Start(Room):
 

@@ -1,23 +1,24 @@
 import pygame
 from pygame.locals import * # Import the pygame constant
 
-from display import Display
+import display
 from maze import Maze, Player
 
-window = Display()
-window.display_window()
+pygame.init()
+
+window = display.window()
 
 player = Player()
 
 a_maze = Maze(player)
-window.display_maze(a_maze.maze)
+display.maze(window, a_maze.maze)
 
 # We find the position of the start of the maze and assign it to the player position.
 start = a_maze.find_in_maze(1)
 player.position_x = start[0][0]
 player.position_y = start[0][1]
 
-window.display_player(player)
+display.player(window, player)
 
 while True:
     # We go through the list of all received events.
@@ -33,7 +34,7 @@ while True:
         elif event.type == KEYDOWN and event.key == K_RIGHT:
             a_maze.move_player('right')
 
-    window.display_maze(a_maze.maze)
-    window.display_player(player)
-    window.display_text_output()
+    display.maze(window, a_maze.maze)
+    display.player(window, player)
+    display.text_output(window, display.text_input(window))
     pygame.display.flip()
