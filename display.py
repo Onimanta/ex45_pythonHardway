@@ -1,5 +1,7 @@
 import pygame
 
+from external.textrect import render_textrect
+
 class Display(object):
 
     def __init__(self):
@@ -31,8 +33,16 @@ class Display(object):
     def display_player(self, player):
         self.window.blit(player.picture, (player.position_y * 32, player.position_x * 32))
 
-    def display_text_output(self):
-        pass
+    def display_text_output(self, text):
+        text = "I test the text output.\nI use the textrect file."
+
+        font = pygame.font.Font(None, 22)
+        rect = pygame.Rect((0, 200, 400, 150))
+
+        rendered_text = render_textrect(text, font, rect, (0, 0, 0), (150, 150, 150), 0)
+
+        if rendered_text:
+            self.window.blit(rendered_text, rect.topleft)
 
     def display_text_input(self):
         pass

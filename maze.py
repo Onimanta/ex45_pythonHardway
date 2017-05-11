@@ -1,30 +1,22 @@
 import pygame
 
-class Room(object):
+from display import Display # Used to display rooms
 
-    def enter(self):
-        print "Nothing defined for the moment. Use subclasses."
+class Room(object):
+    def __init__(self):
+        self.display = Display()
 
 class Start(Room):
-
-    def __init__(self):
-        self.name = 'start'
 
     def enter(self):
         print "Enter start room."
 
 class Empty(Room):
 
-    def __init__(self):
-        self.name = 'empty'
-
     def enter(self):
         print "Enter empty room."
 
 class End(Room):
-
-    def __init__(self):
-        self.name = 'end'
 
     def enter(self):
         print "Enter end room."
@@ -37,6 +29,7 @@ class Player(object):
         self.position_x = 0
         self.position_y = 0
         self.picture = pygame.image.load("player.png").convert()
+        self.picture.set_colorkey((255,255,255))
 
 
 class Maze(object):
@@ -75,6 +68,8 @@ class Maze(object):
 
     def move_player(self, direction):
         """Change the position of the player in the maze depending of a given direction."""
+        previous_position = [self.player.position_x, self.player.position_y]
+
         if direction == 'up' and self.position_ok(self.player.position_x - 1, self.player.position_y):
             self.player.position_x -= 1
         elif direction == 'down' and self.position_ok(self.player.position_x + 1, self.player.position_y):
@@ -84,4 +79,13 @@ class Maze(object):
         elif direction == 'right' and self.position_ok(self.player.position_x, self.player.position_y + 1):
             self.player.position_y += 1
 
+        position = [self.player.position_x, self.player.position_y]
 
+        # If the position hasn't changed don't enter the room again
+        if position != previous_position:
+            self.enter_room()
+
+    def enter_room(self):
+        player_position = self.maze[self.player.position_x][self.player.position_y]
+        room = Maze.rooms.get(player_position)
+        room.enter()

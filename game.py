@@ -35,4 +35,5 @@ while True:
 
     window.display_maze(a_maze.maze)
     window.display_player(player)
+    window.display_text_output()
     pygame.display.flip()
