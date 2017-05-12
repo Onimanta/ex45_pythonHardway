@@ -1,25 +1,39 @@
 import pygame
+from pygame.locals import * # Import the pygame constant
+
+from display import Display
 
 class Room(object):
 
     def __init__(self):
-        pass
+        self.display = Display()
 
 class Start(Room):
 
-    def enter(self):
-        print "Enter start room."
+    def enter(self, player):
+        self.display.display_text_output("Enter start room.")
 
 class Empty(Room):
 
-    def enter(self):
-        print "Enter empty room."
+    def enter(self, player):
+        self.display.display_text_output("Enter empty room.")
 
 class End(Room):
 
-    def enter(self):
-        print "Enter end room."
+    def enter(self, player):
+        self.display.display_text_output("Enter end room.")
 
+        loop = True
+        while loop:
+            for event in pygame.event.get():
+                if event.type == QUIT:  # If event is of type QUIT
+                    exit()
+                elif event.type == KEYDOWN and event.key == K_1:
+                    self.display.display_text_output("win")
+                    loop = False
+                elif event.type == KEYDOWN and event.key == K_2:
+                    self.display.display_text_output("lose")
+                    loop = False
 
 class Player(object):
 
@@ -87,4 +101,4 @@ class Maze(object):
     def enter_room(self):
         player_position = self.maze[self.player.position_x][self.player.position_y]
         room = Maze.rooms.get(player_position)
-        room.enter()
+        room.enter(self.player)
