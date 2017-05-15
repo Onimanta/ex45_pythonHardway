@@ -13,15 +13,40 @@ class Start(Room):
     def enter(self, player):
         self.display.display_text_output("Enter start room.")
 
+        return False
+
 class Empty(Room):
 
     def enter(self, player):
         self.display.display_text_output("Enter empty room.")
 
-class End(Room):
+        return False
+
+class Foe(Room):
 
     def enter(self, player):
-        self.display.display_text_output("Enter end room.")
+        damage = 4
+        self.display.display_text_output(
+            "Enter foe room.\n" +
+            "You take " + str(damage) +
+            " damage.\n" +
+            "The foe disappaer."
+        )
+        player.life_point -= damage
+        self.display.display_window()
+
+        return True
+
+class Trap(Room):
+
+    def enter(self, player):
+        self.display.display_text_output(
+            "Enter trap room.\n" +
+            "What do you do?\n" +
+            "1. Walk\n" +
+            "2. Walk carefully"
+        )
+        self.display.display_window()
 
         loop = True
         while loop:
@@ -29,11 +54,20 @@ class End(Room):
                 if event.type == QUIT:  # If event is of type QUIT
                     exit()
                 elif event.type == KEYDOWN and event.key == K_1:
-                    self.display.display_text_output("win")
+                    self.display.display_text_output("You get hurt by the trap.")
+                    player.life_point -= 5
                     loop = False
                 elif event.type == KEYDOWN and event.key == K_2:
-                    self.display.display_text_output("lose")
+                    self.display.display_text_output("You avoid the trap.")
                     loop = False
+
+        return False
+
+class End(Room):
+
+    def enter(self, player):
+        self.display.display_end("The End")
+        exit()
 
 class Player(object):
 
@@ -50,11 +84,24 @@ class Maze(object):
     rooms = {
         1: Start(),
         2: Empty(),
-        3: End()
+        3: Foe(),
+        4: Trap(),
+        5: End()
     }
 
     def __init__(self, player):
-        self.maze = [[1, 0, 3], [2, 0, 2], [2, 2, 2]]
+        self.maze = []
+
+        with open('maze.csv') as file:
+            for line in file:
+                line = line.replace('\n', '')
+                self.maze.append(line.split(','))
+
+        # We convert the items of the 2d list to int.
+        for idx, line in enumerate(self.maze):
+            for idy, number in enumerate(line):
+                self.maze[idx][idy] = int(self.maze[idx][idy])
+
         self.player = player
 
     def find_in_maze(self, room):
@@ -64,14 +111,14 @@ class Maze(object):
         return position
 
     def position_ok(self, x, y):
-        """Check if the player can be on a given position in the is maze."""
+        """Check if the player can be on a given position in the maze."""
         ok = False
 
-        # Check if the given x and y coordinate don't exceed the size of the maze
+        # We check if the given x and y coordinate don't exceed the size of the maze.
         if x > len(self.maze) - 1 or x < 0 or y > len(self.maze[x]) - 1 or y < 0:
             ok = False
         else:
-            # Then check if there is not a wall at the given position
+            # Then we check if there is not a wall at the given position.
             if self.maze[x][y] == 0:
                 ok = False
             else:
@@ -94,11 +141,16 @@ class Maze(object):
 
         position = [self.player.position_x, self.player.position_y]
 
-        # If the position hasn't changed don't enter the room again
+        # If the position of the player has changed, enter the room
         if position != previous_position:
             self.enter_room()
 
     def enter_room(self):
         player_position = self.maze[self.player.position_x][self.player.position_y]
         room = Maze.rooms.get(player_position)
-        room.enter(self.player)
+        # The room return if it remain or if it disapear.
+        disappear = room.enter(self.player)
+
+        if disappear:
+            # Replace the room with an empty room
+            self.maze[self.player.position_x][self.player.position_y] = 2
