@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import * # Import the pygame constant
+from random import choice # For random choice of the foe
 
 from display import Display
 
@@ -24,15 +25,28 @@ class Empty(Room):
 
 class Foe(Room):
 
+    def __init__(self):
+        super(Foe, self).__init__()
+
+        foes_list = [
+            {'name': "Evil Mushroom", 'place': "hidden at the foot of a bush.",
+             'strength': 3, 'action': "call is friends and they punch your feet."},
+            {'name': "Grass Goblin", 'place': "lying on the ground.",
+             'strength': 4, 'action': "stands, jumps on you and bites your arm."},
+            {'name': "Warrior Tree", 'place': "standing in the middle of the path.",
+             'strength': 6, 'action': "smashes you with his wooden spear."}
+        ]
+        self.foe = choice(foes_list)
+
     def enter(self, player):
-        damage = 4
         self.display.display_text_output(
-            "Enter foe room.\n" +
-            "You take " + str(damage) +
-            " damage.\n" +
-            "The foe disappaer."
+            "You encounter a " + self.foe['name'] + "\n" +
+            "He is " + self.foe['place'] + "\n" +
+            "He " + self.foe['action'] + "\n" +
+            "You take " + str(self.foe['strength']) + " damage.\n" +
+            "The " + self.foe['name'] + " disappaer in the bushes."
         )
-        player.life_point -= damage
+        player.life_point -= self.foe['strength']
         self.display.display_window()
 
         return True
@@ -82,11 +96,11 @@ class Player(object):
 class Maze(object):
 
     rooms = {
-        1: Start(),
-        2: Empty(),
-        3: Foe(),
-        4: Trap(),
-        5: End()
+        'start': Start(),
+        'empty': Empty(),
+        'foe': Foe(),
+        'trap': Trap(),
+        'end': End()
     }
 
     def __init__(self, player):
@@ -98,9 +112,9 @@ class Maze(object):
                 self.maze.append(line.split(','))
 
         # We convert the items of the 2d list to int.
-        for idx, line in enumerate(self.maze):
-            for idy, number in enumerate(line):
-                self.maze[idx][idy] = int(self.maze[idx][idy])
+        # for idx, line in enumerate(self.maze):
+        #     for idy, number in enumerate(line):
+        #         self.maze[idx][idy] = int(self.maze[idx][idy])
 
         self.player = player
 
@@ -119,7 +133,7 @@ class Maze(object):
             ok = False
         else:
             # Then we check if there is not a wall at the given position.
-            if self.maze[x][y] == 0:
+            if self.maze[x][y] == 'wall':
                 ok = False
             else:
                 ok = True
@@ -153,4 +167,4 @@ class Maze(object):
 
         if disappear:
             # Replace the room with an empty room
-            self.maze[self.player.position_x][self.player.position_y] = 2
+            self.maze[self.player.position_x][self.player.position_y] = 'empty'

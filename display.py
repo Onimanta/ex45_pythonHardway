@@ -19,17 +19,17 @@ class Display():
 
         for line in Display.maze:
             for column in line:
-                if column == 0:
+                if column == 'wall':
                     room.blit(tileset, (0, 0), (0, 0, 96, 64))
-                elif column == 1:
+                elif column == 'start':
                     room.blit(tileset, (0, 0), (64, 0, 96, 64))
-                elif column == 2:
+                elif column == 'empty':
                     room.blit(tileset, (0, 0), (32, 0, 96, 64))
-                elif column == 3:
+                elif column == 'foe':
                     room.blit(tileset, (0, 0), (32, 32, 96, 64))
-                elif column == 4:
+                elif column == 'trap':
                     room.blit(tileset, (0, 0), (64, 32, 96, 64))
-                elif column == 5:
+                elif column == 'end':
                     room.blit(tileset, (0, 0), (0, 32, 96, 64))
 
                 Display.window.blit(room, (x, y))
@@ -53,12 +53,22 @@ class Display():
 
     def display_text_output(self, text):
         font = pygame.font.Font(None, 22)
-        rect = pygame.Rect((0, 200, 400, 150))
+        rect = pygame.Rect((0, 350, 400, 150))
 
         rendered_text = render_textrect(text, font, rect, (0, 0, 0), (150, 150, 150), 0)
 
         if rendered_text:
             Display.window.blit(rendered_text, rect.topleft)
+
+    def display_title_screen(self):
+        Display.window.fill((195, 195, 195))
+
+        x, y = Display.window.get_size()
+
+        font = pygame.font.Font(None, 75)
+        title_text = font.render("A Maze", 1, (0, 0, 0))
+        Display.window.blit(title_text, (x / 2 - 100, 100))
+        pygame.display.flip()
 
     def display_end(self, text):
         Display.window.fill((195, 195, 195))

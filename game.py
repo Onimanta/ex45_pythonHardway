@@ -9,17 +9,27 @@ pygame.init()
 Display.window = pygame.display.set_mode((500, 500))
 Display.window.fill((195, 195, 195))
 
-window = Display()
+display = Display()
+
+# We display the title screen of the game.
+title = True
+display.display_title_screen()
+while title:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            exit()
+        elif event.type == KEYDOWN and event.key == K_RETURN:
+            Display.window.fill((195, 195, 195)) # Erase the title screen
+            title = False
 
 player = Player()
 Display.player = player
 
 a_maze = Maze(player)
 Display.maze = a_maze.maze
-print a_maze.maze
 
 # We find the position of the start of the maze and assign it to the player position.
-start = a_maze.find_in_maze(1)
+start = a_maze.find_in_maze('start')
 player.position_x = start[0][0]
 player.position_y = start[0][1]
 
@@ -37,7 +47,7 @@ while player.life_point > 0:
         elif event.type == KEYDOWN and event.key == K_RIGHT:
             a_maze.move_player('right')
 
-    window.display_window()
+    display.display_window()
 
-window.display_end("Game Over")
+display.display_end("Game Over")
 exit()
