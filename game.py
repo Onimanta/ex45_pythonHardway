@@ -1,13 +1,17 @@
+import os # To choose where the window appear on the screen
 import pygame
 from pygame.locals import * # Import the pygame constant
 
 from display import Display
 from maze import Maze, Player
 
+# We choose where the window appear on the screen
+os.environ['SDL_VIDEO_WINDOW_POS'] = "600, 200"
+
 pygame.init()
 
-Display.window = pygame.display.set_mode((500, 500))
-Display.window.fill((195, 195, 195))
+Display.window = pygame.display.set_mode((600, 390), pygame.NOFRAME)
+Display.window.fill((34, 177, 76))
 
 display = Display()
 
@@ -19,14 +23,22 @@ while title:
         if event.type == QUIT:
             exit()
         elif event.type == KEYDOWN and event.key == K_RETURN:
-            Display.window.fill((195, 195, 195)) # Erase the title screen
+            Display.window.fill((34, 177, 76)) # Erase the title screen
             title = False
+        elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            exit()
 
 player = Player()
 Display.player = player
 
 a_maze = Maze(player)
 Display.maze = a_maze.maze
+
+display.display_text_output(
+    "You awake and notice that you're in the back of your garden.\n"
+    "However it feels a bit different..\n"
+    "You get up and decide to go back to your home."
+)
 
 # We find the position of the start of the maze and assign it to the player position.
 start = a_maze.find_in_maze('start')
@@ -46,8 +58,11 @@ while player.life_point > 0:
             a_maze.move_player('left')
         elif event.type == KEYDOWN and event.key == K_RIGHT:
             a_maze.move_player('right')
+        elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            exit()
+
 
     display.display_window()
 
-display.display_end("Game Over")
+display.display_gameover()
 exit()

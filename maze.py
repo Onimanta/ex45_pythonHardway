@@ -12,14 +12,14 @@ class Room(object):
 class Start(Room):
 
     def enter(self, player):
-        self.display.display_text_output("Enter start room.")
+        self.display.display_text_output("You've come back to the start.")
 
         return False
 
 class Empty(Room):
 
     def enter(self, player):
-        self.display.display_text_output("Enter empty room.")
+        self.display.display_text_output("You walk on the grass.")
 
         return False
 
@@ -55,10 +55,10 @@ class Trap(Room):
 
     def enter(self, player):
         self.display.display_text_output(
-            "Enter trap room.\n" +
+            "You see a hole in front of you.\n" +
             "What do you do?\n" +
-            "1. Walk\n" +
-            "2. Walk carefully"
+            "1. Jump over the hole\n" +
+            "2. Jump onto the hole"
         )
         self.display.display_window()
 
@@ -68,19 +68,37 @@ class Trap(Room):
                 if event.type == QUIT:  # If event is of type QUIT
                     exit()
                 elif event.type == KEYDOWN and event.key == K_1:
-                    self.display.display_text_output("You get hurt by the trap.")
-                    player.life_point -= 5
+                    self.display.display_text_output("You jump over the hole and continue your way.")
                     loop = False
                 elif event.type == KEYDOWN and event.key == K_2:
-                    self.display.display_text_output("You avoid the trap.")
+                    self.display.display_text_output(
+                        "You jump in the hole and you hurt you. \n" +
+                        "You take 5 damage.\n" +
+                        "You manage to rise to the surface and you continue your way."
+                    )
+                    player.life_point -= 5
                     loop = False
+                elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                    exit()
 
         return False
+
+class Health(Room):
+
+    def enter(self, player):
+        health = 3
+
+        self.display.display_text_output("You find some berries and you eat them.\n" +
+                                         "You recover " + str(health) + " life points.")
+        player.life_point += health
+        self.display.display_window()
+
+        return True
 
 class End(Room):
 
     def enter(self, player):
-        self.display.display_end("The End")
+        self.display.display_end()
         exit()
 
 class Player(object):
@@ -89,7 +107,7 @@ class Player(object):
         self.life_point = 10
         self.position_x = 0
         self.position_y = 0
-        self.picture = pygame.image.load("player.png").convert()
+        self.picture = pygame.image.load("images/player.png").convert()
         self.picture.set_colorkey((255,255,255))
 
 
@@ -100,6 +118,7 @@ class Maze(object):
         'empty': Empty(),
         'foe': Foe(),
         'trap': Trap(),
+        'health': Health(),
         'end': End()
     }
 
@@ -110,11 +129,6 @@ class Maze(object):
             for line in file:
                 line = line.replace('\n', '')
                 self.maze.append(line.split(','))
-
-        # We convert the items of the 2d list to int.
-        # for idx, line in enumerate(self.maze):
-        #     for idy, number in enumerate(line):
-        #         self.maze[idx][idy] = int(self.maze[idx][idy])
 
         self.player = player
 
