@@ -16,17 +16,7 @@ Display.window.fill((34, 177, 76))
 display = Display()
 
 # We display the title screen of the game.
-title = True
 display.display_title_screen()
-while title:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            exit()
-        elif event.type == KEYDOWN and event.key == K_RETURN:
-            Display.window.fill((34, 177, 76)) # Erase the title screen
-            title = False
-        elif event.type == KEYDOWN and event.key == K_ESCAPE:
-            exit()
 
 player = Player()
 Display.player = player
@@ -34,21 +24,24 @@ Display.player = player
 a_maze = Maze(player)
 Display.maze = a_maze.maze
 
+# We find the position of the start of the maze and assign it to the player position.
+start = a_maze.find_in_maze('start')
+player.position_x = start[0][0]
+player.position_y = start[0][1]
+
+# Intro message of the game
 display.display_text_output(
     "You awake and notice that you're in the back of your garden.\n"
     "However it feels a bit different..\n"
     "You get up and decide to go back to your home."
 )
 
-# We find the position of the start of the maze and assign it to the player position.
-start = a_maze.find_in_maze('start')
-player.position_x = start[0][0]
-player.position_y = start[0][1]
-
+# This is the main loop. It is active when the player moves in the maze.
 while player.life_point > 0:
     # We go through the list of all received events.
     for event in pygame.event.get():
-        if event.type == QUIT:  # If event is of type QUIT
+
+        if event.type == QUIT:
             exit()
         elif event.type == KEYDOWN and event.key == K_UP:
             a_maze.move_player('up')
@@ -61,8 +54,8 @@ while player.life_point > 0:
         elif event.type == KEYDOWN and event.key == K_ESCAPE:
             exit()
 
-
     display.display_window()
 
+# When the player's life point are below 0 we display the game over screen and quit the game.
 display.display_gameover()
 exit()

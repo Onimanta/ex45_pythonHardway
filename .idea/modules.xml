@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ex45_pythonHardway.iml" filepath="$PROJECT_DIR$/.idea/ex45_pythonHardway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../pythonHardway/.idea/pythonHardway.iml" filepath="$PROJECT_DIR$/../pythonHardway/.idea/pythonHardway.iml" />
     </modules>
   </component>
 </project>

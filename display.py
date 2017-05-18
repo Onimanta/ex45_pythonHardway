@@ -1,5 +1,7 @@
-import pygame
 from time import sleep # Used to display the end screen
+
+import pygame
+from pygame.locals import * # Import the pygame constant
 
 from external.textrect import render_textrect
 
@@ -11,14 +13,20 @@ class Display():
     information = None
 
     def display_maze(self):
+        # We start with coordinates set to 10 to shift a bit the maze in the x and y axis
         x = 10
         y = 10
 
+        # We load the entire tileset.
         tileset = pygame.image.load('images/tiles.png')
+
+        # We create a 32*32 surface and then we move the tileset to display
+        # only the tile we need in the 32*32 surface.
         room = pygame.Surface((32, 32))
 
         for line in Display.maze:
             for column in line:
+
                 if column == 'wall':
                     room.blit(tileset, (0, 0), (0, 0, 96, 64))
                 elif column == 'start':
@@ -33,10 +41,14 @@ class Display():
                     room.blit(tileset, (0, 0), (0, 64, 96, 64))
                 elif column == 'end':
                     room.blit(tileset, (0, 0), (0, 32, 96, 64))
+                else:
+                    # If the element in the list is unknown we just draw a
+                    # black square to know that there is something wrong.
+                    pygame.draw.rect(Display.window, (0, 0, 0), (x, y, 32, 32), 0)
 
                 Display.window.blit(room, (x, y))
 
-                x += 32
+                x += 32 # Next room will be displayed 32px further in x axis
             x = 10
             y += 32
 
@@ -68,11 +80,26 @@ class Display():
 
         if rendered_text:
             Display.window.blit(rendered_text, rect.topleft)
+        else:
+            print "Can't render text."
 
     def display_title_screen(self):
-        title = pygame.image.load("images/title.png").convert()
-        Display.window.blit(title, (0, 0))
+        title = True
+        title_image = pygame.image.load("images/title.png").convert()
+
+        Display.window.blit(title_image, (0, 0))
         pygame.display.flip()
+
+        while title:
+            for event in pygame.event.get():
+
+                if event.type == QUIT:
+                    exit()
+                elif event.type == KEYDOWN and event.key == K_RETURN:
+                    Display.window.fill((34, 177, 76))  # Erase the title screen
+                    title = False
+                elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                    exit()
 
     def display_gameover(self):
         gameover = pygame.image.load("images/gameover.png").convert()

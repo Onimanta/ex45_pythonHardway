@@ -65,14 +65,15 @@ class Trap(Room):
         loop = True
         while loop:
             for event in pygame.event.get():
-                if event.type == QUIT:  # If event is of type QUIT
+
+                if event.type == QUIT:
                     exit()
                 elif event.type == KEYDOWN and event.key == K_1:
                     self.display.display_text_output("You jump over the hole and continue your way.")
                     loop = False
                 elif event.type == KEYDOWN and event.key == K_2:
                     self.display.display_text_output(
-                        "You jump in the hole and you hurt you. \n" +
+                        "You jump in the hole and you hurt you.\n" +
                         "You take 5 damage.\n" +
                         "You manage to rise to the surface and you continue your way."
                     )
@@ -86,6 +87,7 @@ class Trap(Room):
 class Health(Room):
 
     def enter(self, player):
+        """When the player will enter this room, it will recover some life points."""
         health = 3
 
         self.display.display_text_output("You find some berries and you eat them.\n" +
@@ -133,7 +135,7 @@ class Maze(object):
         self.player = player
 
     def find_in_maze(self, room):
-        """Search for all occurences of room in the maze (2d list) and return coordinates"""
+        """Search for all occurences of "room" in the maze (2d list) and return coordinates"""
         position = [(index, row.index(room)) for index, row in
                     enumerate(self.maze) if room in row]
         return position
@@ -142,8 +144,10 @@ class Maze(object):
         """Check if the player can be on a given position in the maze."""
         ok = False
 
+        position_out_of_maze = x > len(self.maze) - 1 or x < 0 or y > len(self.maze[x]) - 1 or y < 0
+
         # We check if the given x and y coordinate don't exceed the size of the maze.
-        if x > len(self.maze) - 1 or x < 0 or y > len(self.maze[x]) - 1 or y < 0:
+        if position_out_of_maze:
             ok = False
         else:
             # Then we check if there is not a wall at the given position.
@@ -155,7 +159,9 @@ class Maze(object):
         return ok
 
     def move_player(self, direction):
-        """Change the position of the player in the maze depending of a given direction."""
+        """Change the position of the player in the maze depending of a given direction.
+        :param direction: text which indicate in which direction the player will move
+        """
         previous_position = [self.player.position_x, self.player.position_y]
 
         if direction == 'up' and self.position_ok(self.player.position_x - 1, self.player.position_y):
@@ -166,17 +172,19 @@ class Maze(object):
             self.player.position_y -= 1
         elif direction == 'right' and self.position_ok(self.player.position_x, self.player.position_y + 1):
             self.player.position_y += 1
+        else:
+            print "Unknown direction. You must provide one of the following directions : up, down, left, right."
 
-        position = [self.player.position_x, self.player.position_y]
+        current_position = [self.player.position_x, self.player.position_y]
 
-        # If the position of the player has changed, enter the room
-        if position != previous_position:
+        # We don't enter the room again if the position of the player hasn't changed.
+        if current_position != previous_position:
             self.enter_room()
 
     def enter_room(self):
         player_position = self.maze[self.player.position_x][self.player.position_y]
         room = Maze.rooms.get(player_position)
-        # The room return if it remain or if it disapear.
+        # The room return if either it remain or if it disappear.
         disappear = room.enter(self.player)
 
         if disappear:
