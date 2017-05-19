@@ -1,11 +1,12 @@
-import os # To choose where the window appear on the screen
+import os  # Used to choose where the window appear on the screen.
+
 import pygame
-from pygame.locals import * # Import the pygame constant
+from pygame.locals import *
 
 from display import Display
 from maze import Maze, Player
 
-# We choose where the window appear on the screen
+# We choose where the window appear on the screen.
 os.environ['SDL_VIDEO_WINDOW_POS'] = "600, 200"
 
 pygame.init()
@@ -15,7 +16,6 @@ Display.window.fill((34, 177, 76))
 
 display = Display()
 
-# We display the title screen of the game.
 display.display_title_screen()
 
 player = Player()
@@ -38,7 +38,6 @@ display.display_text_output(
 
 # This is the main loop. It is active when the player moves in the maze.
 while player.life_point > 0:
-    # We go through the list of all received events.
     for event in pygame.event.get():
 
         if event.type == QUIT:

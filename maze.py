@@ -1,8 +1,10 @@
+from random import choice  # Used for random choice of the foe.
+
 import pygame
-from pygame.locals import * # Import the pygame constant
-from random import choice # For random choice of the foe
+from pygame.locals import *
 
 from display import Display
+
 
 class Room(object):
 
@@ -13,14 +15,12 @@ class Start(Room):
 
     def enter(self, player):
         self.display.display_text_output("You've come back to the start.")
-
         return False
 
 class Empty(Room):
 
     def enter(self, player):
         self.display.display_text_output("You walk on the grass.")
-
         return False
 
 class Foe(Room):
@@ -40,10 +40,10 @@ class Foe(Room):
 
     def enter(self, player):
         self.display.display_text_output(
-            "You encounter a " + self.foe['name'] + "\n" +
-            "He is " + self.foe['place'] + "\n" +
-            "He " + self.foe['action'] + "\n" +
-            "You take " + str(self.foe['strength']) + " damage.\n" +
+            "You encounter a " + self.foe['name'] + "\n"
+            "He is " + self.foe['place'] + "\n"
+            "He " + self.foe['action'] + "\n"
+            "You take " + str(self.foe['strength']) + " damage.\n"
             "The " + self.foe['name'] + " disappaer in the bushes."
         )
         player.life_point -= self.foe['strength']
@@ -55,9 +55,9 @@ class Trap(Room):
 
     def enter(self, player):
         self.display.display_text_output(
-            "You see a hole in front of you.\n" +
-            "What do you do?\n" +
-            "1. Jump over the hole\n" +
+            "You see a hole in front of you.\n"
+            "What do you do?\n"
+            "1. Jump over the hole\n"
             "2. Jump onto the hole"
         )
         self.display.display_window()
@@ -69,7 +69,8 @@ class Trap(Room):
                 if event.type == QUIT:
                     exit()
                 elif event.type == KEYDOWN and event.key == K_1:
-                    self.display.display_text_output("You jump over the hole and continue your way.")
+                    self.display.display_text_output("You jump over the hole and "
+                                                     "continue your way.")
                     loop = False
                 elif event.type == KEYDOWN and event.key == K_2:
                     self.display.display_text_output(
@@ -103,6 +104,7 @@ class End(Room):
         self.display.display_end()
         exit()
 
+
 class Player(object):
 
     def __init__(self):
@@ -135,9 +137,8 @@ class Maze(object):
         self.player = player
 
     def find_in_maze(self, room):
-        """Search for all occurences of "room" in the maze (2d list) and return coordinates"""
-        position = [(index, row.index(room)) for index, row in
-                    enumerate(self.maze) if room in row]
+        """Search for all occurrences of "room" in the maze (2d list) and return coordinates"""
+        position = [(index, row.index(room)) for index, row in enumerate(self.maze) if room in row]
         return position
 
     def position_ok(self, x, y):
@@ -160,20 +161,21 @@ class Maze(object):
 
     def move_player(self, direction):
         """Change the position of the player in the maze depending of a given direction.
-        :param direction: text which indicate in which direction the player will move
+
+        :param direction: text which indicate in which direction the player will move.
         """
+        player_pos_x = self.player.position_x
+        player_pos_y = self.player.position_y
         previous_position = [self.player.position_x, self.player.position_y]
 
-        if direction == 'up' and self.position_ok(self.player.position_x - 1, self.player.position_y):
+        if direction == 'up' and self.position_ok(player_pos_x - 1, player_pos_y):
             self.player.position_x -= 1
-        elif direction == 'down' and self.position_ok(self.player.position_x + 1, self.player.position_y):
+        elif direction == 'down' and self.position_ok(player_pos_x + 1, player_pos_y):
             self.player.position_x += 1
-        elif direction == 'left' and self.position_ok(self.player.position_x, self.player.position_y - 1):
+        elif direction == 'left' and self.position_ok(player_pos_x, player_pos_y):
             self.player.position_y -= 1
-        elif direction == 'right' and self.position_ok(self.player.position_x, self.player.position_y + 1):
+        elif direction == 'right' and self.position_ok(player_pos_x, player_pos_y + 1):
             self.player.position_y += 1
-        else:
-            print "Unknown direction. You must provide one of the following directions : up, down, left, right."
 
         current_position = [self.player.position_x, self.player.position_y]
 
@@ -182,11 +184,11 @@ class Maze(object):
             self.enter_room()
 
     def enter_room(self):
+        """Enter the room at the current player position."""
         player_position = self.maze[self.player.position_x][self.player.position_y]
         room = Maze.rooms.get(player_position)
-        # The room return if either it remain or if it disappear.
         disappear = room.enter(self.player)
 
         if disappear:
-            # Replace the room with an empty room
+            # We replace the room with an empty room.
             self.maze[self.player.position_x][self.player.position_y] = 'empty'
