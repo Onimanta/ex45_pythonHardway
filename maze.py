@@ -172,7 +172,7 @@ class Maze(object):
             self.player.position_x -= 1
         elif direction == 'down' and self.position_ok(player_pos_x + 1, player_pos_y):
             self.player.position_x += 1
-        elif direction == 'left' and self.position_ok(player_pos_x, player_pos_y):
+        elif direction == 'left' and self.position_ok(player_pos_x, player_pos_y - 1):
             self.player.position_y -= 1
         elif direction == 'right' and self.position_ok(player_pos_x, player_pos_y + 1):
             self.player.position_y += 1
