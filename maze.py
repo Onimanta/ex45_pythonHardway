@@ -112,7 +112,7 @@ class Player(object):
         self.position_x = 0
         self.position_y = 0
         self.picture = pygame.image.load("images/player.png").convert()
-        self.picture.set_colorkey((255,255,255))
+        self.picture.set_colorkey((255, 255, 255))
 
 
 class Maze(object):
@@ -164,23 +164,21 @@ class Maze(object):
 
         :param direction: text which indicate in which direction the player will move.
         """
-        player_pos_x = self.player.position_x
-        player_pos_y = self.player.position_y
-        previous_position = [self.player.position_x, self.player.position_y]
+        shift_vect = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
+        player_position = previous_position = [self.player.position_x, self.player.position_y]
 
-        if direction == 'up' and self.position_ok(player_pos_x - 1, player_pos_y):
-            self.player.position_x -= 1
-        elif direction == 'down' and self.position_ok(player_pos_x + 1, player_pos_y):
-            self.player.position_x += 1
-        elif direction == 'left' and self.position_ok(player_pos_x, player_pos_y - 1):
-            self.player.position_y -= 1
-        elif direction == 'right' and self.position_ok(player_pos_x, player_pos_y + 1):
-            self.player.position_y += 1
+        def shift_by(pos, shift):
+            return pos[0] + shift[0], pos[1] + shift[1]
 
-        current_position = [self.player.position_x, self.player.position_y]
+        new_position = shift_by(player_position, shift_vect[direction])
+
+        if self.position_ok(new_position[0], new_position[1]):
+            player_position = new_position
+            self.player.position_x = player_position[0]
+            self.player.position_y = player_position[1]
 
         # We don't enter the room again if the position of the player hasn't changed.
-        if current_position != previous_position:
+        if player_position != previous_position:
             self.enter_room()
 
     def enter_room(self):
